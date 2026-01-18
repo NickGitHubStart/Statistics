@@ -73,9 +73,10 @@ if __name__ == "__main__":
     print("\nFormel: z = (x - mu) / sigma")
     print("Wahrscheinlichkeit: P(Z <= z) = Phi(z)")
     print("\nVerwendung:")
-    print("  python z_score.py z=<wert> mu=<wert> sigma=<wert> x=<wert> p=<wert>")
+    print("  python z_score.py z=<wert> mu=<wert> sigma=<wert> x=<wert> p=<wert> [var=<wert>]")
     print("\nWenn ein Wert unbekannt ist, verwende '-' als Platzhalter")
     print("p = Wahrscheinlichkeit P(Z <= z) (Flächeninhalt)")
+    print("var = Varianz (wird automatisch in sigma umgerechnet: sigma = sqrt(var))")
     print("\nBeispiele:")
     print("  python z_score.py z=1.5 mu=100 sigma=15 x=-")
     print("  python z_score.py z=1 mu=- sigma=- x=- p=-")
@@ -93,6 +94,7 @@ if __name__ == "__main__":
     sigma = None
     x = None
     p = None
+    var = None
     
     for arg in sys.argv[1:]:
         if '=' in arg:
@@ -102,11 +104,13 @@ if __name__ == "__main__":
                 parsed_value = parse_value(value)
                 if key in ['z', 'z-score', 'zscore']:
                     z = parsed_value
-                elif key in ['mu', 'μ', 'mittelwert', 'mean']:
+                elif key in ['mu', 'μ', 'mittelwert', 'mean', 'mu0']:
                     mu = parsed_value
                 elif key in ['sigma', 'σ', 'std', 'standardabweichung']:
                     sigma = parsed_value
-                elif key == 'x':
+                elif key in ['var', 'varianz', 'variance']:
+                    var = parsed_value
+                elif key in ['x', 'x_bar', 'xbar']:
                     x = parsed_value
                 elif key in ['p', 'prob', 'wahrscheinlichkeit', 'phi', 'probability']:
                     p = parsed_value
@@ -115,6 +119,17 @@ if __name__ == "__main__":
             except ValueError as e:
                 print(f"FEHLER beim Parsen von {key}={value}: {e}")
                 sys.exit(1)
+    
+    # Wenn var gegeben ist, in sigma umrechnen (falls sigma nicht bereits gegeben)
+    var_verwendet = False
+    if var is not None:
+        if var < 0:
+            raise ValueError("Varianz darf nicht negativ sein")
+        if sigma is not None:
+            print("Warnung: Sowohl sigma als auch var wurden angegeben. sigma wird verwendet.")
+        else:
+            sigma = math.sqrt(var)
+            var_verwendet = True
     
     # Zähle gegebene Werte (p zählt nicht zu den 4 Grundwerten)
     gegebene_werte = sum([z is not None, mu is not None, sigma is not None, x is not None])
@@ -137,7 +152,13 @@ if __name__ == "__main__":
     print("=" * 70)
     print(f"  z (Z-Score) = {z if z is not None else '-'}")
     print(f"  mu (Mittelwert) = {mu if mu is not None else '-'}")
-    print(f"  sigma (Standardabweichung) = {sigma if sigma is not None else '-'}")
+    if var_verwendet:
+        print(f"  var (Varianz) = {var}")
+        print(f"  sigma (Standardabweichung) = {sigma:.6f} (aus var berechnet: sigma = sqrt(var))")
+    else:
+        print(f"  sigma (Standardabweichung) = {sigma if sigma is not None else '-'}")
+        if var is not None and not var_verwendet:
+            print(f"  var (Varianz) = {var} (ignoriert, sigma wurde verwendet)")
     print(f"  x (Wert) = {x if x is not None else '-'}")
     print(f"  p (Wahrscheinlichkeit P(Z <= z)) = {p if p is not None else '-'}")
     
@@ -165,6 +186,10 @@ if __name__ == "__main__":
         berechnungen.append(f"Verifikation: Phi({z}) = {p_berechnet:.6f}")
         if abs(p - p_berechnet) > 0.0001:
             berechnungen.append(f"  Warnung: Abweichung zwischen gegebenem und berechnetem p!")
+    
+    # Wenn var verwendet wurde, zeige Umrechnung
+    if var_verwendet:
+        berechnungen.append(f"sigma = sqrt(var) = sqrt({var}) = {sigma:.6f}")
     
     # Dann: z, mu, sigma, x berechnen
     if z is None:
@@ -202,7 +227,16 @@ if __name__ == "__main__":
     print("\n" + "=" * 70)
     print("ERGEBNIS")
     print("=" * 70)
-    print(f"  z (Z-Score) = {z:.6f}")
+    # Berechne p falls z gegeben ist aber p noch nicht berechnet wurde
+    if z is not None and p is None:
+        p = berechne_wahrscheinlichkeit(z)
+    
+    # Zeige Z-Score mit Prozentwert in Klammern
+    if z is not None:
+        if p is not None:
+            print(f"  z (Z-Score) = {z:.6f} ({p*100:.2f}%)")
+        else:
+            print(f"  z (Z-Score) = {z:.6f}")
     if mu is not None:
         print(f"  mu (Mittelwert) = {mu:.6f}")
     if sigma is not None:

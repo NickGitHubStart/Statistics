@@ -6,6 +6,7 @@ Sammlung von Python-Programmen für statistische Berechnungen.
 
 - **z_score.py** - Z-Score Berechnung
 - **hypothesentest.py** - Hypothesentest (Z-Test)
+- **konfidenzintervall.py** - Konfidenzintervalle (Z-Test und t-Test)
 - **binomial.py** - Binomialverteilung
 - **hypergeometrisch.py** - Hypergeometrische Verteilung
 - **poisson.py** - Poisson-Verteilung
@@ -21,13 +22,16 @@ Berechnet Z-Score, Mittelwert, Standardabweichung oder x-Wert.
 
 **Verwendung:**
 ```bash
-python z_score.py z=<wert> mu=<wert> sigma=<wert> x=<wert> [p=<wert>]
+python z_score.py z=<wert> mu=<wert> sigma=<wert> x=<wert> [p=<wert>] [var=<wert>]
 ```
 
 **Beispiele:**
 ```bash
 # Z-Score berechnen
 python z_score.py z=- x=85 mu=100 sigma=15
+
+# Mit Varianz (wird automatisch in sigma umgerechnet)
+python z_score.py z=- x=85 mu=100 var=225
 
 # x-Wert berechnen
 python z_score.py z=1.5 mu=100 sigma=15 x=-
@@ -37,13 +41,17 @@ python z_score.py z=1.5 p=-
 ```
 
 **Parameter:**
-- `z` - Z-Score
-- `mu` - Mittelwert (μ)
+- `z` - Z-Score (wird mit Prozentwert in Klammern ausgegeben)
+- `mu` oder `mu0` - Mittelwert (μ)
 - `sigma` - Standardabweichung (σ)
-- `x` - Wert
+- `var` - Varianz (wird automatisch in sigma umgerechnet: `sigma = sqrt(var)`)
+- `x` oder `x_bar` - Wert
 - `p` - Wahrscheinlichkeit P(Z ≤ z)
 
-**Hinweis:** Mindestens 3 der 4 Werte (z, mu, sigma, x) müssen angegeben werden. Verwende `-` für unbekannte Werte.
+**Hinweis:** 
+- Mindestens 3 der 4 Werte (z, mu, sigma, x) müssen angegeben werden. Verwende `-` für unbekannte Werte.
+- Wenn `var` angegeben wird, wird es automatisch in `sigma` umgerechnet. Wenn sowohl `var` als auch `sigma` angegeben werden, wird `sigma` verwendet.
+- Der Z-Score wird mit dem Prozentwert (p-Wert) in Klammern ausgegeben, z.B. `z = 1.500000 (93.32%)`
 
 ---
 
@@ -79,6 +87,57 @@ python hypothesentest.py z=1.67 mu0=100 sigma=15 n=25 alpha=0.05 test=zweiseitig
 - `test` - Testart: `zweiseitig`, `einseitig_links`, `einseitig_rechts` (oder `links`, `rechts`)
 - `z` - Teststatistik (optional)
 - `p` - p-Wert (optional)
+
+---
+
+## konfidenzintervall.py
+
+Berechnet Konfidenzintervalle für den Mittelwert. **Das Programm wählt automatisch die passende Formel** basierend auf den eingegebenen Parametern.
+
+**Formeln:**
+- **Z-Test** (σ bekannt): `x̄ ± z_{1-α/2} · σ/√n`
+- **t-Test** (nur s bekannt): `x̄ ± t_{n-1; 1-α/2} · s/√n`
+
+**Automatische Formelauswahl:**
+- Wenn `sigma` angegeben wird → **Z-Test** wird verwendet
+- Wenn `s` oder `shoch2` angegeben wird → **t-Test** wird verwendet
+
+**Verwendung:**
+```bash
+python konfidenzintervall.py x_bar=<wert> n=<wert> alpha=<wert> seite=<art> [sigma=<wert>] [s=<wert>] [shoch2=<wert>]
+```
+
+**Beispiele:**
+```bash
+# t-Test mit Varianz (wird automatisch in s umgerechnet)
+python konfidenzintervall.py x_bar=9 n=31 alpha=0.05 seite=zweiseitig shoch2=31/4
+
+# t-Test mit Standardabweichung
+python konfidenzintervall.py x_bar=9 n=31 alpha=0.05 seite=zweiseitig s=2.78
+
+# Z-Test (sigma bekannt)
+python konfidenzintervall.py x_bar=100 n=25 alpha=0.05 seite=zweiseitig sigma=15
+
+# Einseitiges Intervall
+python konfidenzintervall.py x_bar=9 n=31 alpha=0.05 seite=einseitig_rechts shoch2=31/4
+```
+
+**Parameter:**
+- `x_bar` - Stichprobenmittelwert (x̄)
+- `n` - Stichprobenumfang
+- `alpha` - Irrtumswahrscheinlichkeit
+- `seite` - Intervallart: `zweiseitig`, `einseitig_links`, `einseitig_rechts` (oder `links`, `rechts`)
+- `sigma` - Populationsstandardabweichung (σ) - verwendet **Z-Test**
+- `s` - Stichprobenstandardabweichung - verwendet **t-Test**
+- `shoch2` - Varianz (wird automatisch in s umgerechnet: `s = sqrt(shoch2)`) - verwendet **t-Test**
+
+**Hinweise:**
+- **Formelauswahl:** Das Programm erkennt automatisch, welche Formel verwendet werden soll:
+  - `sigma` gegeben → Z-Test mit Normalverteilung
+  - `s` oder `shoch2` gegeben → t-Test mit t-Verteilung
+- Wenn `shoch2` angegeben wird, wird es automatisch in `s` umgerechnet
+- Das Programm berechnet automatisch z/t-Werte, Wahrscheinlichkeiten und das Konfidenzintervall
+- **Konfidenzniveau** = (1 - alpha) × 100%
 
 ---
 
