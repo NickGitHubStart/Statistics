@@ -10,6 +10,7 @@ Sammlung von Python-Programmen für statistische Berechnungen.
 - **k_sigma.py** - k-Sigma-Regel (Vorhersageintervall für einzelne Beobachtungen)
 - **trennschaerfe.py** - Trennschärfe (Power) Berechnung (Einstichproben und Zweistichproben)
 - **korrelation.py** - Korrelationskoeffizienten (Pearson, Spearman, Kontingenzkoeffizient)
+- **standardabweichung.py** - Standardabweichung und deskriptive Statistik
 - **binomial.py** - Binomialverteilung
 - **hypergeometrisch.py** - Hypergeometrische Verteilung
 - **poisson.py** - Poisson-Verteilung
@@ -492,6 +493,49 @@ python k_sigma.py mu=10 sigma=0.0167 conf=95
 - `conf` kann als Dezimalzahl (0.95) oder als Prozent (95) angegeben werden
 - Wenn sowohl `z` als auch `conf` angegeben werden, wird `z` verwendet
 - **Unterschied zu Konfidenzintervall:** k-Sigma-Regel gibt Intervall für einzelne Beobachtungen, Konfidenzintervall gibt Intervall für den Mittelwert
+
+---
+
+## standardabweichung.py
+
+Berechnet Standardabweichung, Varianz, Mittelwert und weitere deskriptive Statistiken aus einer Liste von Datenwerten.
+
+**Formeln:**
+- **Stichprobenstandardabweichung**: `s = sqrt(Σ(xi - x_bar)² / (n-1))`
+- **Populationsstandardabweichung**: `σ = sqrt(Σ(xi - μ)² / n)`
+- **Varianz**: `s²` bzw. `σ²`
+
+**Verwendung:**
+```bash
+python standardabweichung.py daten=<wert1>,<wert2>,... [population=true]
+```
+
+**Beispiele:**
+```bash
+# Stichprobenstandardabweichung (Standard, n-1 im Nenner)
+python standardabweichung.py daten=390,410,370
+
+# Populationsstandardabweichung (n im Nenner)
+python standardabweichung.py daten=390,410,370 population=true
+```
+
+**Parameter:**
+- `daten` - Liste der Datenwerte (kommagetrennt)
+- `population` - Wenn `true`, verwendet Populationsformeln (n im Nenner), sonst Stichprobenformeln (n-1)
+
+**Ausgabe:**
+- Anzahl Werte (n)
+- Mittelwert (x_bar oder mu)
+- Median
+- Minimum, Maximum, Spannweite
+- Q1, Q3, IQR (Interquartilsabstand)
+- Varianz (s² oder σ²)
+- Standardabweichung (s oder σ)
+
+**Hinweise:**
+- **Standard:** Stichprobenstandardabweichung (n-1 im Nenner) - verwendet für Stichproben
+- **population=true:** Populationsstandardabweichung (n im Nenner) - verwendet für vollständige Populationen
+- Das Programm berechnet automatisch alle deskriptiven Statistiken
 
 ---
 
