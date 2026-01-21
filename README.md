@@ -10,7 +10,9 @@ Sammlung von Python-Programmen für statistische Berechnungen.
 - **k_sigma.py** - k-Sigma-Regel (Vorhersageintervall für einzelne Beobachtungen)
 - **trennschaerfe.py** - Trennschärfe (Power) Berechnung (Einstichproben und Zweistichproben)
 - **korrelation.py** - Korrelationskoeffizienten (Pearson, Spearman, Kontingenzkoeffizient)
+- **korrelation_csv.py** - Korrelationskoeffizienten aus CSV-Datei
 - **standardabweichung.py** - Standardabweichung und deskriptive Statistik
+- **standardabweichung_csv.py** - Standardabweichung aus CSV-Datei
 - **binomial.py** - Binomialverteilung
 - **hypergeometrisch.py** - Hypergeometrische Verteilung
 - **poisson.py** - Poisson-Verteilung
@@ -536,6 +538,74 @@ python standardabweichung.py daten=390,410,370 population=true
 - **Standard:** Stichprobenstandardabweichung (n-1 im Nenner) - verwendet für Stichproben
 - **population=true:** Populationsstandardabweichung (n im Nenner) - verwendet für vollständige Populationen
 - Das Programm berechnet automatisch alle deskriptiven Statistiken
+
+---
+
+## standardabweichung_csv.py
+
+CSV-Version von `standardabweichung.py`. Laedt Daten aus einer CSV-Datei und berechnet Standardabweichung, Varianz und weitere deskriptive Statistiken.
+
+**Verwendung:**
+```bash
+python standardabweichung_csv.py file=<datei.csv> [spalte=<name|index>] [population=true]
+```
+
+**Beispiele:**
+```bash
+# Erste Spalte verwenden
+python standardabweichung_csv.py file=data.csv
+
+# Spalte nach Name
+python standardabweichung_csv.py file=data.csv spalte=zeit
+
+# Spalte nach Index (0-basiert)
+python standardabweichung_csv.py file=data.csv spalte=0
+```
+
+**Parameter:**
+- `file` - Pfad zur CSV-Datei
+- `spalte` - Spaltenname oder Index (0-basiert). Wenn nicht angegeben, wird die erste Spalte verwendet
+- `population` - Wenn `true`, verwendet Populationsformeln (n im Nenner)
+
+**Hinweise:**
+- Unterstuetzt verschiedene Encodings (UTF-8, Latin-1, CP1252)
+- Unterstuetzt Komma- und Semikolon-getrennte CSV-Dateien
+- Ignoriert leere und nicht-numerische Werte automatisch
+- Wenn die CSV-Datei eine Header-Zeile hat, kann die Spalte per Name angegeben werden
+
+---
+
+## korrelation_csv.py
+
+CSV-Version von `korrelation.py`. Laedt zwei Spalten aus einer CSV-Datei und berechnet Pearson- und Spearman-Korrelationskoeffizienten.
+
+**Verwendung:**
+```bash
+python korrelation_csv.py file=<datei.csv> [x_spalte=<name|index>] [y_spalte=<name|index>]
+```
+
+**Beispiele:**
+```bash
+# Erste und zweite Spalte verwenden
+python korrelation_csv.py file=data.csv
+
+# Spalten nach Namen
+python korrelation_csv.py file=data.csv x_spalte=groesse y_spalte=gewicht
+
+# Spalten nach Index (0-basiert)
+python korrelation_csv.py file=data.csv x_spalte=0 y_spalte=1
+```
+
+**Parameter:**
+- `file` - Pfad zur CSV-Datei
+- `x_spalte` - Name oder Index der x-Spalte (Standard: erste Spalte)
+- `y_spalte` - Name oder Index der y-Spalte (Standard: zweite Spalte)
+
+**Hinweise:**
+- Unterstuetzt verschiedene Encodings (UTF-8, Latin-1, CP1252)
+- Unterstuetzt Komma- und Semikolon-getrennte CSV-Dateien
+- Ignoriert Zeilen mit fehlenden oder nicht-numerischen Werten automatisch
+- Wenn die CSV-Datei eine Header-Zeile hat, koennen die Spalten per Name angegeben werden
 
 ---
 
