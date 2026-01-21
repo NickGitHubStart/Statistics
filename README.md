@@ -9,6 +9,7 @@ Sammlung von Python-Programmen für statistische Berechnungen.
 - **konfidenzintervall.py** - Konfidenzintervalle (Z-Test, t-Test, Chi²-Test für Varianz)
 - **k_sigma.py** - k-Sigma-Regel (Vorhersageintervall für einzelne Beobachtungen)
 - **trennschaerfe.py** - Trennschärfe (Power) Berechnung (Einstichproben und Zweistichproben)
+- **korrelation.py** - Korrelationskoeffizienten (Pearson, Spearman, Kontingenzkoeffizient)
 - **binomial.py** - Binomialverteilung
 - **hypergeometrisch.py** - Hypergeometrische Verteilung
 - **poisson.py** - Poisson-Verteilung
@@ -381,6 +382,56 @@ python trennschaerfe.py mu0=100 sigma=15 n=25 alpha=0.05 power=0.8 test=zweiseit
   - 0.5 ≤ Power < 0.8: moderat
   - Power ≥ 0.8: ausreichend (empfohlen)
 - Beta (Fehler 2. Art) = 1 - Power
+
+---
+
+## korrelation.py
+
+Berechnet verschiedene Korrelationskoeffizienten:
+- **Pearson-Korrelationskoeffizient** (Bravais-Pearson) r
+- **Spearman-Rangkorrelationskoeffizient** rho
+- **Kontingenzkoeffizient** C (aus Kontingenztabelle)
+
+**Formeln:**
+- Pearson: `r = Summe(xi - x_bar)(yi - y_bar) / sqrt[Summe(xi - x_bar)^2 * Summe(yi - y_bar)^2]`
+- Spearman: `rho = 1 - (6 * Summe d^2) / (n * (n^2 - 1))` wobei d = Rang(xi) - Rang(yi)
+- Kontingenzkoeffizient: `C = sqrt(χ² / (χ² + n))`
+
+**Verwendung:**
+```bash
+# Pearson und Spearman (mit Listen)
+python korrelation.py x=<wert1>,<wert2>,... y=<wert1>,<wert2>,...
+
+# Kontingenzkoeffizient (Kontingenztabelle)
+python korrelation.py kontingenz=[[a,b],[c,d]]
+```
+
+**Beispiele:**
+```bash
+# Pearson und Spearman berechnen
+python korrelation.py x=1,2,3,4,5 y=2,4,6,8,10
+
+# Kontingenzkoeffizient berechnen
+python korrelation.py kontingenz=[[10,20],[15,25]]
+```
+
+**Parameter:**
+- `x` - Liste der x-Werte (kommagetrennt)
+- `y` - Liste der y-Werte (kommagetrennt) - muss gleiche Länge wie x haben
+- `kontingenz` - Kontingenztabelle im Format `[[a,b],[c,d]]`
+
+**Hinweise:**
+- Für Pearson und Spearman müssen `x` und `y` die gleiche Länge haben
+- Das Programm berechnet automatisch p-Werte für Signifikanztests
+- **Pearson** misst lineare Korrelation
+- **Spearman** misst monotone Korrelation (basierend auf Rängen)
+- **Kontingenzkoeffizient** misst Zusammenhang zwischen kategorialen Variablen
+- Interpretation der Pearson-Korrelation:
+  - |r| < 0.1: praktisch keine Korrelation
+  - 0.1 ≤ |r| < 0.3: schwache Korrelation
+  - 0.3 ≤ |r| < 0.5: mittlere Korrelation
+  - 0.5 ≤ |r| < 0.7: starke Korrelation
+  - |r| ≥ 0.7: sehr starke Korrelation
 
 ---
 
